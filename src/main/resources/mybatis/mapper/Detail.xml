@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dayuanit.atm.mapper.DetailMapper">
+
+	<resultMap id="detailResultMap" type="detail">
+		<id property="id" column="id" />
+		<result property="userId" column="user_id"/>
+		<result property="cardId" column="card_id"/>
+		<result property="amount" column="amount"/>
+		<result property="optType" column="opt_type"/>
+		<result property="flowDesc" column="flow_desc"/>
+		<result property="createTime" column="create_time"/>
+	</resultMap>
+
+	<sql id="atm_detail_filed">
+		id,user_id,card_id,amount,opt_type,flow_desc,create_time
+	</sql>
+
+	<insert id="addDetail" parameterType="detail" useGeneratedKeys="true" keyProperty="id">
+		insert into atm_detail(user_id,card_id,amount,opt_type,flow_desc,create_time)
+		value(#{userId},#{cardId},#{amount},#{optType},#{flowDesc},now());
+	</insert>
+
+	<select id="countDetail" resultType="int">
+		select count(id) from atm_detail
+		where card_id=#{cardId};
+	</select>
+
+	<select id="listDetail" resultMap="detailResultMap">
+		select <include refid="atm_detail_filed"></include>
+		from atm_detail
+		where card_id=#{cardId} order by id desc limit #{offSet},#{prePageNum};
+	</select>
+
+</mapper>
+

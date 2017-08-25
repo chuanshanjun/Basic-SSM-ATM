@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dayuanit.atm.mapper.CardMapper">
+
+	<resultMap id="cardResultMap" type="card">
+		<id property="id" column="id" />
+		<result property="userId" column="user_id"/>
+		<result property="cardNum" column="card_num"/>
+		<result property="balance" column="balance"/>
+		<result property="status" column="status"/>
+		<result property="createTime" column="create_time"/>
+		<result property="modifyTime" column="modify_time"/>
+	</resultMap>
+
+	<sql id="atm_card_filed">
+		id,user_id,card_num,balance,status,create_time,modify_time
+	</sql>
+
+	<insert id="addCard" parameterType="card" useGeneratedKeys="true" keyProperty="id">
+		insert into atm_card(user_id, card_num,balance,status,create_time,modify_time) 
+		value (#{userId},#{cardNum},0,0,now(),now()); 
+	</insert>
+
+	<select id="getCard" resultMap="cardResultMap">
+		select <include refid="atm_card_filed"></include>
+		from atm_card
+		where 1=1
+		<if test="cardNum != null">
+			and card_num=#{cardNum}
+		</if>
+
+		<if test="cardId != null">
+			and id=#{cardId}
+		</if>
+	</select>
+
+	<select id="countCard" resultType="int">
+		select count(id) from atm_card 
+		where user_id=#{userId} and status=0;
+	</select>
+
+	<select id="listCard" resultMap="cardResultMap">
+		select <include refid="atm_card_filed"></include>
+		from atm_card
+		where user_id=#{userId} and status=0
+		order by id desc limit #{offSet},#{prePageNum}
+	</select>
+
+	<update id="updataBalance">
+		update atm_card set balance=balance+#{amount}
+		where id=#{cardId};
+	</update>
+
+	<select id="getCard4Lock" resultMap="cardResultMap">
+		select <include refid="atm_card_filed"></include>
+		from atm_card
+		<trim prefix="where" prefixOverrides="and | or">
+
+			<if test="cardNum != null">
+				and card_num=#{cardNum}
+			</if>
+
+			<if test="cardId != null">
+				and id=#{cardId}
+			</if>
+		</trim>
+		for UPDATE;
+	</select>
+
+</mapper>
+

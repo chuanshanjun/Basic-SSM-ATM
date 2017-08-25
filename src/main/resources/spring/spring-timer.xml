@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- job是奴隶真正干活的-->
+	<bean id="transferJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="transferTask"/>
+		<property name="targetMethod" value="doTask"/>
+	</bean>
+
+	<!-- tigger(跳跳虎)监理，监督奴隶干活-->
+	<bean id="transferTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="transferJob"/>
+		<property name="cronExpression" value="0/10 * * * * ?"/><!--10代表10秒-->
+	</bean>
+
+	<!-- scheduler大老板 一个老板可以管几个监理，但一个监理对应一个奴隶-->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers"><!-- trigger(扳机)-->
+			<list>
+				<ref bean="transferTrigger"/>
+			</list>
+		</property>
+	</bean>
+</beans>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dayuanit.atm.mapper.UserMapper">
+
+	<resultMap id="userResultMap" type="user">
+		<id property="id" column="id" />
+		<result property="username" column="username"/>
+		<result property="password" column="password"/>
+		<result property="createTime" column="create_time"/>
+	</resultMap>
+	
+	<sql id="atm_user_filed">
+		id,username,password,create_time
+	</sql>
+	
+	<insert id="addUser" parameterType="user" useGeneratedKeys="true" keyProperty="id">
+		insert into atm_user(username, password, create_time)
+		value(#{username}, #{password}, now());
+	</insert>
+	
+	<select id="getUserByUserName" resultMap="userResultMap">
+		select <include refid="atm_user_filed"></include>
+		from atm_user
+		where username=#{username}
+	</select>
+
+</mapper>
+

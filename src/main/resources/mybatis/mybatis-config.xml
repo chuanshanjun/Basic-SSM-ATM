@@ -1,0 +1,17 @@
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!-- 属性定义 加载一个properties文件 在 properties标签 中配置属性值 -->
+	<!--  <properties resource="jdbc.properties"/> -->
+
+	<!-- 定义 别名 -->
+	<typeAliases>
+		<typeAlias type="com.dayuanit.atm.domain.User" alias="user"/>
+		<typeAlias type="com.dayuanit.atm.domain.Card" alias="card"/>
+		<typeAlias type="com.dayuanit.atm.domain.Detail" alias="detail"/>
+		<typeAlias type="com.dayuanit.atm.domain.Transfer" alias="transfer"/>
+	</typeAliases>
+
+</configuration>
