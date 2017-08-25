@@ -39,5 +39,7 @@ public class LogTest {
         String msg2 = String.valueOf(b);
 
         System.out.println("msg2=" + msg2);
+
+        System.out.println("测试下是否能更新");
     }
 }
