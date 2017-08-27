@@ -19,7 +19,7 @@
 	<!-- tigger(跳跳虎)监理，监督奴隶干活-->
 	<bean id="transferTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="transferJob"/>
-		<property name="cronExpression" value="0/10 * * * * ?"/><!--10代表10秒-->
+		<property name="cronExpression" value="0/150 * * * * ?"/><!--10代表10秒-->
 	</bean>
 
 	<!-- scheduler大老板 一个老板可以管几个监理，但一个监理对应一个奴隶-->

@@ -53,6 +53,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where id=#{cardId};
 	</update>
 
+	<update id="updataStatus">
+		update atm_card set status=1
+		where id=#{cardId}
+	</update>
+
 	<select id="getCard4Lock" resultMap="cardResultMap">
 		select <include refid="atm_card_filed"></include>
 		from atm_card

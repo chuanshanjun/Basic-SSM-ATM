@@ -3,9 +3,11 @@ package com.dayuanit.atm.task;
 import com.dayuanit.atm.Exception.ATMException;
 import com.dayuanit.atm.controller.CardController;
 import com.dayuanit.atm.domain.Transfer;
+import com.dayuanit.atm.handler.EmailHandler;
 import com.dayuanit.atm.mapper.CardMapper;
 import com.dayuanit.atm.mapper.TransferMapper;
 import com.dayuanit.atm.service.CardService;
+import com.dayuanit.atm.service.TransferService;
 import com.dayuanit.atm.serviceImpl.CardServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +27,13 @@ public class TransferTask {
     private TransferMapper transferMapper;
 
     @Autowired
+    private TransferService transferService;
+
+    @Autowired
     private CardService cardService;
+
+    @Autowired
+    private EmailHandler emailHandler;
 
     Logger log = LoggerFactory.getLogger(TransferTask.class);
 
@@ -37,7 +45,15 @@ public class TransferTask {
                 cardService.transfer4In(transfer);
             } catch (Exception e) {
                 log.error("异步转账失败{}", e.getMessage() , e);
+                transferService.backMoney(transfer);
                 continue;
+            } finally {
+                try {
+                    emailHandler.submit(transfer);
+                } catch (Exception eee) {
+                    log.error("邮件发送失败{}", eee.getMessage(), eee);
+                }
+
             }
         }
     }

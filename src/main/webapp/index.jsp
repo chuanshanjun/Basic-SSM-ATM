@@ -17,7 +17,7 @@ welcom dayuanit ATM-SSM system.
 	<c:if test="${not empty login_user_flag}">
 		<h1>用户名：${login_user_flag.username}</h1>
 		<h1>用户ID：${login_user_flag.id}</h1>
-		<img height="50px" width="50px" src="/user/readFile.do" onerror="javascript:this.src='/images/default.png'">
+		<img height="50px" width="50px" src="/user/readFile.do" onerror="javascript:this.src='/images/timg.jpg'">
 	</c:if>	
 		
 	<c:if test="${not empty login_user_flag}">	

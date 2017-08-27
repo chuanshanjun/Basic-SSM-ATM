@@ -18,7 +18,7 @@
 <h1>余额:${card.balance}</h1>
 <h1>卡ID:${cardId}</h1>
 <a href="/card/toDeposit.do?cardId=${card.id}">存款</a>
-<a href="/bankCard/toDraw.do?cardId=${card.id}">取款</a>
+<a href="/card/toDraw.do?cardId=${card.id}">取款</a>
 <a href="/card/toTransfer.do?cardId=${card.id}">转账</a>
 <a href="###" onclick="listDetail();">查看流水</a>
 

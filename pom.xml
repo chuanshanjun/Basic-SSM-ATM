@@ -182,6 +182,12 @@
       <version>2.2.1</version>
     </dependency>
 
+    <dependency><!-- javamail的包-->
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4.7</version>
+    </dependency>
+
   </dependencies>
   <build>
     <finalName>atm-maven-1.0</finalName>

@@ -21,4 +21,6 @@ public interface CardMapper {
 	int updataBalance(@Param("amount") Integer amount, @Param("cardId") Integer cardId);
 
 	Card getCard4Lock(@Param("cardNum")String cardNum, @Param("cardId")Integer cardId);
+
+	int updataStatus(@Param("cardId")Integer cardId);
 }

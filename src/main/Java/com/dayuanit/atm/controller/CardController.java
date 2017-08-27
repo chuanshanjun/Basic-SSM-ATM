@@ -19,6 +19,8 @@ import com.dayuanit.atm.mapper.CardMapper;
 import com.dayuanit.atm.service.CardService;
 import com.dayuanit.atm.util.PageUtils;
 
+import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
+
 @Controller
 @RequestMapping("/card")
 public class CardController extends BaseController{
@@ -35,6 +37,18 @@ public class CardController extends BaseController{
 			return AjaxResultDTO.failed(ae.getMessage());
 		}
 		
+		return AjaxResultDTO.success();
+	}
+
+	@RequestMapping("/deleteCard")
+	@ResponseBody
+	public AjaxResultDTO deleteCard(int cardId, HttpServletRequest req) {
+		try {
+			cardService.deleteCard(cardId, getUserId(req));
+		} catch (ATMException ae) {
+			return AjaxResultDTO.failed(ae.getMessage());
+		}
+
 		return AjaxResultDTO.success();
 	}
 	
@@ -90,6 +104,27 @@ public class CardController extends BaseController{
 		}
 
 		return AjaxResultDTO.success(pu);
+	}
+
+	@RequestMapping("/toDraw")
+	public String toDraw(int cardId, ModelMap mm) {
+		Card card = cardService.getCard(null, cardId);
+
+		mm.addAttribute("card", card);
+
+		return "draw";
+	}
+
+	@RequestMapping("/draw")
+	@ResponseBody
+	public AjaxResultDTO draw(int cardId, int amount, HttpServletRequest req) {
+		try {
+			cardService.draw(cardId, amount,getUserId(req));
+		} catch (ATMException ae) {
+			AjaxResultDTO.failed(ae.getMessage());
+		}
+
+		return AjaxResultDTO.success();
 	}
 
 	@RequestMapping("/toDeposit")

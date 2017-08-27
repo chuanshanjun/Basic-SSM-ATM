@@ -45,4 +45,12 @@ public class TransferMapperTest {
         int rows = transferMapper.add(transfer);
         assertEquals(1, rows);
     }
+
+    @Test
+    @Rollback
+    public void testGetTransferById() {
+        Transfer transfer = transferMapper.getTransferById(1);
+        int i = transfer.getStatus();
+        assertEquals(2, i);
+    }
 }

@@ -1,6 +1,7 @@
 package com.dayuanit.atm.mapper;
 
 import com.dayuanit.atm.domain.Transfer;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -14,4 +15,6 @@ public interface TransferMapper {
     int updateStatus(Transfer transfer);
 
     List<Transfer> listTransfer4In();
+
+    Transfer getTransferById(@Param("transferId") Integer transferId);
 }

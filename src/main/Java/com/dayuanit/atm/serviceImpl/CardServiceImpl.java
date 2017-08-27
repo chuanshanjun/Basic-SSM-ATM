@@ -14,6 +14,9 @@ import com.dayuanit.atm.enums.TransferEnum;
 import com.dayuanit.atm.enums.optType;
 import com.dayuanit.atm.mapper.DetailMapper;
 import com.dayuanit.atm.mapper.TransferMapper;
+import com.mysql.jdbc.log.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CardServiceImpl implements CardService{
+
+	private Logger log = LoggerFactory.getLogger(CardServiceImpl.class);
 
 	@Autowired
 	private CardMapper cardMapper;
@@ -127,6 +132,67 @@ public class CardServiceImpl implements CardService{
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
+	public void draw(int cardId, int amount, int userId) {
+
+		if (amount <= 0) {
+			throw new ATMException("金额不能小于零");
+		}
+
+		Card testCard = cardMapper.getCard(null, cardId);
+
+		if (null == testCard) {
+			throw new ATMException("银行卡不存在");
+		}
+
+		if (amount > testCard.getBalance()) {
+			throw new ATMException("余额不足");
+		}
+
+		if (userId != testCard.getUserId().intValue()) {
+			throw new ATMException("无权操作");
+		}
+
+		int rows = cardMapper.updataBalance(-amount, cardId);
+
+		if (1 != rows) {
+			throw new ATMException("取款失败");
+		}
+
+		Detail detail = new Detail();
+		detail.setAmount(amount);
+		detail.setCardId(cardId);
+		detail.setUserId(userId);
+		detail.setFlowDesc("取款");
+		detail.setOptType(optType.DRAW.getCode());
+
+		rows = detailMapper.addDetail(detail);
+
+		if (1 != rows) {
+			throw new ATMException("取款失败");
+		}
+	}
+
+	@Override
+	public void deleteCard(int cardId, int userId) {
+		Card testCard = cardMapper.getCard(null, cardId);
+
+		if (null == testCard) {
+			throw new ATMException("卡不存在");
+		}
+
+		if (userId != testCard.getUserId()) {
+			throw new ATMException("无权操作");
+		}
+
+		int rows = cardMapper.updataStatus(cardId);
+
+		if (1 != rows) {
+			throw new ATMException("删除失败");
+		}
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
 	public void deposit(int cardId, int amount, int userId) {
 
 		if (amount < 0) {
@@ -153,7 +219,7 @@ public class CardServiceImpl implements CardService{
 		detail.setUserId(userId);
 		detail.setCardId(cardId);
 		detail.setAmount(amount);
-		detail.setOptType(1);
+		detail.setOptType(optType.DEPOSIT.getCode());
 		detail.setFlowDesc("存款");
 
 		rows = detailMapper.addDetail(detail);
@@ -192,7 +258,7 @@ public class CardServiceImpl implements CardService{
 		//检查余额是否足够
 		if (amount > outCard.getBalance()) {
 			throw new ATMException("余额不够");
-		}
+	}
 
 		int rows = cardMapper.updataBalance(-amount, outCardId);
 		if (1 != rows) {
@@ -238,6 +304,8 @@ public class CardServiceImpl implements CardService{
 		//入账卡号是否存在，并使用悲观锁配合事务
 		Card inCard = cardMapper.getCard4Lock(transfer.getInCardNum(), null);
 
+		//在查询一次确保数据是最新的，此时考虑到有多线程时的情况
+		transfer = transferMapper.getTransferById(transfer.getId());
 		if (transfer.getStatus().intValue() != TransferEnum.un_transfer.getK()) {
 			return;//进入锁之后再次查询下
 		}
@@ -246,12 +314,14 @@ public class CardServiceImpl implements CardService{
 			throw new ATMException("入账卡不存在");
 		}
 
+		//给入账卡加钱
 		int rows = cardMapper.updataBalance(transfer.getAmount(), inCard.getId());
 
 		if (1 != rows) {
 			throw new ATMException("转账失败");
 		}
 
+		//增加流水
 		Detail detail = new Detail();
 		detail.setAmount(transfer.getAmount());
 		detail.setFlowDesc("转账收入");
@@ -265,11 +335,15 @@ public class CardServiceImpl implements CardService{
 			throw new ATMException("转账失败");
 		}
 
+		//改变transfer的属性更新数据库
 		transfer.setStatus(TransferEnum.already_transfer.getK());
 		rows = transferMapper.updateStatus(transfer);
 
 		if (1 != rows) {
 			throw new ATMException("转账失败");
 		}
+
+		log.info("在CardServiceImpl中打印transfer的状态:{}", transfer.getStatus());
+
 	}
 }

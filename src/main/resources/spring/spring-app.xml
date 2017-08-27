@@ -36,7 +36,9 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-	<import resource="spring-timer.xml"/>
+	<import resource="spring-timer.xml"/><!-- 目录前加上"/"指从根目录上查找属绝对路径，
+	不加/的话是指从相对路径找也就是从你这个文件开始的路径来找-->
+	<import resource="spring-email.xml"/>
 	<!-- 
 	<import resource="spring-service.xml"/>
 	 -->

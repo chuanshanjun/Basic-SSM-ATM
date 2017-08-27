@@ -75,7 +75,7 @@
     	function deleteCard(cardId) {
     		if (confirm("你确信要删除银行卡吗？")) {
     			$.ajax({
-                    url:'/bankCard/deleteCard.do',
+                    url:'/card/deleteCard.do',
                     type:'POST', //GET
                     async:true,    //或false,是否异步
                     data:{

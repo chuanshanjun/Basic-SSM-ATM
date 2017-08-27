@@ -23,4 +23,8 @@ public interface CardService {
 	void asynTransfer(int amount, int outCardId, String inCardNum, int userId);
 
 	void transfer4In(Transfer transfer);
+
+	void draw(int cardId, int amount, int userId);
+
+	void deleteCard(int cardId, int userId);
 }
